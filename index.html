@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Evaluation Report - Comprehensive Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 50px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 50px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .subsection-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 30px 0 20px 0;
+        }
+        
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .comparison-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #dee2e6;
+        }
+        
+        .comparison-box.structured {
+            border-left-color: #e74c3c;
+        }
+        
+        .comparison-box.manual {
+            border-left-color: #27ae60;
+        }
+        
+        .comparison-label {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: #6c757d;
+        }
+        
+        .model-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .model-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .model-card.winner {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #e6f9ea 100%);
+        }
+        
+        .model-card.winner .model-name::after {
+            content: " 🏆";
+        }
+        
+        .model-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .metric-subvalue {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .pricing-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .pricing-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .pricing-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .pricing-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .pricing-item-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .pricing-item-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .cost-estimate {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #2d3748;
+        }
+        
+        .cost-estimate strong {
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .quality-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .quality-item {
+            margin-bottom: 12px;
+        }
+        
+        .quality-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .winner-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .winner-box h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .winner-box p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .score-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .warning-icon {
+            color: #ffc107;
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .success-icon {
+            color: #28a745;
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-left: 5px solid #f39c12;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .insight-box h3 {
+            color: #2d3748;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .insight-box p {
+            color: #2d3748;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 10px;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .print-btn {
+                display: none;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Model Evaluation Report</h1>
+            <p>Comprehensive Structured Output & Prompted JSON Output Analysis</p>
+        </div>
+        
+        <div class="content">
+            <!-- Comparison Overview -->
+            <div class="section">
+                <h2 class="section-title">Two Approaches Compared</h2>
+                
+                <div class="comparison-container">
+                    <div class="comparison-box structured">
+                        <div class="comparison-label">Pydantic Structured Output</div>
+                        <p style="margin-bottom: 15px; color: #6c757d; line-height: 1.6;">
+                            Using pydantic-ai's built-in structured output feature
+                        </p>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Success</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Gemini 2.5 Pro</strong></td>
+                                    <td><span class="badge badge-danger">Failed</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Claude 4.5 Sonnet</strong></td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GPT-4o</strong></td>
+                                    <td><span class="badge badge-danger">Failed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="comparison-box manual">
+                        <div class="comparison-label">Prompted JSON Output</div>
+                        <p style="margin-bottom: 15px; color: #6c757d; line-height: 1.6;">
+                            Custom implementation without pydantic structured output
+                        </p>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Success</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Gemini 2.5 Pro</strong></td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Claude 4.5 Sonnet</strong></td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>GPT-4o</strong></td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="insight-box">
+                    <h3>💡 Key Insight</h3>
+                    <p>
+                        When using prompted JSON output, all three models successfully completed the extraction task. 
+                        However, Gemini 2.5 Pro and GPT-4o failed when using pydantic-ai's structured output feature, 
+                        suggesting the failures were due to the structured output implementation i.e. model's tool calling mechanism rather than model capabilities. 
+                        Claude 4.5 Sonnet succeeded in both approaches, demonstrating superior compatibility and robustness.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Prompted JSON Output Results -->
+            <div class="section">
+                <h2 class="section-title">Prompted JSON Output Results</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Sections</th>
+                            <th>Submittals</th>
+                            <th>Materials</th>
+                            <th>Time (s)</th>
+                            <th>Output Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Gemini 2.5 Pro</strong></td>
+                            <td><span class="success-icon">✅</span> 6/6</td>
+                            <td>24</td>
+                            <td>31</td>
+                            <td>90.29</td>
+                            <td>24,211 chars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Claude 4.5 Sonnet</strong></td>
+                            <td><span class="success-icon">✅</span> 6/6</td>
+                            <td>59</td>
+                            <td>126</td>
+                            <td>187.89</td>
+                            <td>51,114 chars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-4o</strong></td>
+                            <td><span class="success-icon">✅</span> 6/6</td>
+                            <td>18</td>
+                            <td>16</td>
+                            <td>22.07</td>
+                            <td>11,233 chars</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">Quality Metrics Comparison</h3>
+                
+                <div class="model-card">
+                    <div class="model-name">Gemini 2.5 Pro</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Submittals</div>
+                            <div class="metric-value">24</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Materials</div>
+                            <div class="metric-value">31</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Scope Class.</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Activity Tag</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Manufacturers</div>
+                            <div class="metric-value">41.9%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Specifications</div>
+                            <div class="metric-value">96.8%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card winner">
+                    <div class="model-name">Claude 4.5 Sonnet</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Submittals</div>
+                            <div class="metric-value">59</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Materials</div>
+                            <div class="metric-value">126</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Scope Class.</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Activity Tag</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Manufacturers</div>
+                            <div class="metric-value">24.6%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Specifications</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-name">GPT-4o</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Submittals</div>
+                            <div class="metric-value">18</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Materials</div>
+                            <div class="metric-value">16</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Scope Class.</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Activity Tag</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Manufacturers</div>
+                            <div class="metric-value">37.5%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Specifications</div>
+                            <div class="metric-value">100%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pydantic Structured Output Results -->
+            <div class="section">
+                <h2 class="section-title">Pydantic Structured Output Results</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Sections</th>
+                            <th>Submittals</th>
+                            <th>Materials</th>
+                            <th>Time (s)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Gemini 2.5 Pro</strong></td>
+                            <td><span class="warning-icon">⚠️</span> 0/6</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>35.40</td>
+                            <td><span class="badge badge-danger">Failed</span></td>
+                        </tr>
+                        <tr style="background: #f0fff4;">
+                            <td><strong>Claude 4.5 Sonnet 🏆</strong></td>
+                            <td><span class="success-icon">✅</span> 6/6</td>
+                            <td>50</td>
+                            <td>81</td>
+                            <td>172.25</td>
+                            <td><span class="badge badge-success">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-4o</strong></td>
+                            <td><span class="warning-icon">⚠️</span> 0/6</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>13.93</td>
+                            <td><span class="badge badge-danger">Failed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title">Quality Metrics Comparison</h3>
+                
+                <div class="model-card">
+                    <div class="model-name">Gemini 2.5 Pro <span class="badge badge-danger">Failed</span></div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Submittals</div>
+                            <div class="metric-value" style="color: #dc3545;">0</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Materials</div>
+                            <div class="metric-value" style="color: #dc3545;">0</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Scope Class.</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Activity Tag</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Manufacturers</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Specifications</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 3px solid #ffc107;">
+                        <strong style="color: #856404;">⚠️ No sections extracted</strong> - Structured output implementation failed
+                    </div>
+                </div>
+                
+                <div class="model-card winner">
+                    <div class="model-name">Claude 4.5 Sonnet</div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Submittals</div>
+                            <div class="metric-value">50</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Materials</div>
+                            <div class="metric-value">81</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Scope Class.</div>
+                            <div class="metric-value">100%</div>
+                            <div class="metric-subvalue">50/50</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Activity Tag</div>
+                            <div class="metric-value">98.0%</div>
+                            <div class="metric-subvalue">49/50</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Manufacturers</div>
+                            <div class="metric-value">32.1%</div>
+                            <div class="metric-subvalue">26/81</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Specifications</div>
+                            <div class="metric-value">100%</div>
+                            <div class="metric-subvalue">81/81</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #d4edda; border-radius: 6px; border-left: 3px solid #28a745;">
+                        <strong style="color: #155724;">✅ Only model to succeed</strong> with Pydantic structured output
+                    </div>
+                </div>
+                
+                <div class="model-card">
+                    <div class="model-name">GPT-4o <span class="badge badge-danger">Failed</span></div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-label">Submittals</div>
+                            <div class="metric-value" style="color: #dc3545;">0</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Materials</div>
+                            <div class="metric-value" style="color: #dc3545;">0</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Scope Class.</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Activity Tag</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Manufacturers</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">w/ Specifications</div>
+                            <div class="metric-value" style="color: #dc3545;">N/A</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 3px solid #ffc107;">
+                        <strong style="color: #856404;">⚠️ No sections extracted</strong> - Structured output implementation failed
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Analysis - Prompted JSON Output -->
+            <div class="section">
+                <h2 class="section-title">Cost Analysis & Pricing: Prompted JSON Output</h2>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">Gemini 2.5 Pro</div>
+                    <div class="pricing-details">
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Input Tokens (≤200K)</div>
+                            <div class="pricing-item-value">$1.25</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Output Tokens</div>
+                            <div class="pricing-item-value">$10.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                    </div>
+                    <div class="cost-estimate">
+                        <strong>Estimated cost for this evaluation:</strong> 
+                        Input: ~$0.028 (22,075 tokens) + Output: ~$0.125 (12,541 tokens) = <strong>~$0.15 total</strong>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: #6c757d;">
+                        🎯 Best price/performance ratio • 2M token context window • Includes 6,312 reasoning tokens
+                    </div>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">Claude 4.5 Sonnet</div>
+                    <div class="pricing-details">
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Input Tokens</div>
+                            <div class="pricing-item-value">$3.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Output Tokens</div>
+                            <div class="pricing-item-value">$15.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                    </div>
+                    <div class="cost-estimate">
+                        <strong>Estimated cost for this evaluation:</strong> 
+                        Input: $0.074 (24,690 tokens) + Output: $0.208 (13,850 tokens) = <strong>~$0.28 total</strong>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: #6c757d;">
+                        🏆 Most comprehensive extraction • 59 submittals, 126 materials
+                    </div>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">GPT-4o</div>
+                    <div class="pricing-details">
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Input Tokens</div>
+                            <div class="pricing-item-value">$2.50</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Output Tokens</div>
+                            <div class="pricing-item-value">$10.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                    </div>
+                    <div class="cost-estimate">
+                        <strong>Estimated cost for this evaluation:</strong> 
+                        Input: $0.048 (19,186 tokens) + Output: $0.026 (2,620 tokens) = <strong>~$0.07 total</strong>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: #6c757d;">
+                        💨 Fastest execution (22.07s) • Lowest cost but minimal extraction
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    <h3>💰 Cost Analysis Summary - Prompted JSON Output</h3>
+                    <p style="margin-bottom: 10px;">
+                        <strong>Gemini 2.5 Pro</strong> offers the best balance with moderate extraction quality (24 submittals, 31 materials) at the lowest cost (~$0.15). Its 2M token context window and reasoning capabilities make it ideal for large documents.
+                    </p>
+                    <p style="margin-bottom: 10px;">
+                        <strong>Claude 4.5 Sonnet</strong> extracted the most comprehensive data (59 submittals, 126 materials) with perfect quality metrics. At ~$0.28, it's the most expensive but delivers 2-3x more data than competitors.
+                    </p>
+                    <p>
+                        <strong>GPT-4o</strong> is the fastest (22.07s) and cheapest (~$0.07) but extracted minimal data (18 submittals, 16 materials). Best for quick, cost-sensitive tasks where comprehensive extraction isn't critical.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Pricing Analysis - Pydantic Structured Output -->
+            <div class="section">
+                <h2 class="section-title">Cost Analysis & Pricing: Pydantic Structured Output</h2>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">Gemini 2.5 Pro <span class="badge badge-danger">Failed</span></div>
+                    <div class="pricing-details">
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Input Tokens (≤200K)</div>
+                            <div class="pricing-item-value">$1.25</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Output Tokens</div>
+                            <div class="pricing-item-value">$10.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                    </div>
+                    <div class="cost-estimate">
+                        <strong>Estimated cost for this evaluation:</strong> 
+                        Input: ~$0.027 (21,904 tokens) + Output: ~$0.046 (4,634 tokens) = <strong>~$0.07 total</strong>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: #dc3545;">
+                        ⚠️ Failed extraction • No usable output despite 4,630 reasoning tokens
+                    </div>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">Claude 4.5 Sonnet <span class="badge badge-success">Success</span></div>
+                    <div class="pricing-details">
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Input Tokens</div>
+                            <div class="pricing-item-value">$3.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Output Tokens</div>
+                            <div class="pricing-item-value">$15.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                    </div>
+                    <div class="cost-estimate">
+                        <strong>Estimated cost for this evaluation:</strong> 
+                        Input: $0.079 (26,359 tokens) + Output: $0.166 (11,067 tokens) = <strong>~$0.25 total</strong>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: #28a745;">
+                        🏆 Only successful model • ⚡ 90% savings with prompt caching • 50% savings with batch processing
+                    </div>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">GPT-4o <span class="badge badge-danger">Failed</span></div>
+                    <div class="pricing-details">
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Input Tokens</div>
+                            <div class="pricing-item-value">$2.50</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="pricing-item-label">Output Tokens</div>
+                            <div class="pricing-item-value">$10.00</div>
+                            <div class="metric-subvalue">per 1M tokens</div>
+                        </div>
+                    </div>
+                    <div class="cost-estimate">
+                        <strong>Estimated cost for this evaluation:</strong> 
+                        Input: $0.047 (18,973 tokens) + Output: $0.001 (83 tokens) = <strong>~$0.05 total</strong>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: #dc3545;">
+                        ⚠️ Failed extraction • Cheapest but incompatible with Pydantic structured output
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    <h3>💰 Cost Analysis Summary - Pydantic Structured Output</h3>
+                    <p style="margin-bottom: 10px;">
+                        <strong>Claude 4.5 Sonnet</strong> is the ONLY model that successfully extracted data using Pydantic's structured output feature. At ~$0.25 per evaluation, it's the clear choice for structured output implementations.
+                    </p>
+                    <p style="margin-bottom: 10px;">
+                        <strong>Gemini 2.5 Pro</strong> and <strong>GPT-4o</strong> both failed to produce usable structured output despite successful API calls. While they had lower token costs (~$0.07 and ~$0.05), the failed extractions make them unsuitable for Pydantic-based workflows.
+                    </p>
+                    <p>
+                        <strong>Recommendation:</strong> If using pydantic-ai or similar structured output frameworks, Claude 4.5 Sonnet is currently the only reliable option. Consider prompted JSON output with prompt engineering for other models.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Winner Section -->
+            <div class="section">
+                <div class="winner-box">
+                    <h2>🏆 Overall Winner</h2>
+                    <p><strong>Claude 4.5 Sonnet</strong></p>
+                    <div class="score-badge">Prompted JSON Output: 92.5/100</div>
+                    <div class="score-badge">Structured Output: 93.2/100</div>
+                    <p style="margin-top: 20px; font-size: 16px;">
+                        Only model to succeed with both Pydantic structured output and prompted JSON output<br>
+                        Extracted the most comprehensive data with highest quality metrics
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px; padding: 25px; background: #f8f9fa; border-radius: 12px;">
+                    <h3 style="color: #2d3748; font-size: 20px; margin-bottom: 15px;">Recommendations</h3>
+                    <p style="color: #6c757d; line-height: 1.8; margin-bottom: 10px;">
+                        <strong style="color: #667eea;">For Production Systems:</strong> Use Claude 4.5 Sonnet for its reliability, comprehensive extraction, and compatibility with structured output frameworks.
+                    </p>
+                    <p style="color: #6c757d; line-height: 1.8; margin-bottom: 10px;">
+                        <strong style="color: #667eea;">For Cost-Sensitive Projects:</strong> Consider Gemini 2.5 Pro with prompted JSON output for 40% lower costs while maintaining good quality.
+                    </p>
+                    <p style="color: #6c757d; line-height: 1.8;">
+                        <strong style="color: #667eea;">For Large Documents:</strong> Leverage Gemini 2.5 Pro's 2M token context window for processing entire codebases or lengthy specifications.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+</body>
+</html>
